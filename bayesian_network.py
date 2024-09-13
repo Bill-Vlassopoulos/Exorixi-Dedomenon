@@ -1,8 +1,7 @@
 import pandas as pd
 import glob
-from pgmpy.models import BayesianNetwork
-from pgmpy.estimators import MaximumLikelihoodEstimator
 from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score, classification_report
 
 
@@ -16,7 +15,9 @@ def main():
         dataframes[key] = df
 
     whole_data = pd.concat(dataframes.values())
+    whole_data.drop(["index", "Unnamed: 0"], axis=1, inplace=True)
     print(whole_data.head())
+
     # Split the data into training and testing sets
     X = whole_data.drop(["timestamp", "label"], axis=1)
     y = whole_data["label"]
@@ -24,20 +25,9 @@ def main():
         X, y, test_size=0.2, random_state=42
     )
 
-    # Define the Bayesian Network structure
-    model = BayesianNetwork(
-        [
-            ("back_x", "label"),
-            ("back_y", "label"),
-            ("back_z", "label"),
-            ("thigh_x", "label"),
-            ("thigh_y", "label"),
-            ("thigh_z", "label"),
-        ]
-    )
-
-    # Fit the model
-    model.fit(X_train, estimator=MaximumLikelihoodEstimator)
+    # Define and fit the Naive Bayes model
+    model = GaussianNB()
+    model.fit(X_train, y_train)
 
     # Predict the labels for the test set
     y_pred = model.predict(X_test)
