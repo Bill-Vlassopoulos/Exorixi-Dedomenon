@@ -7,12 +7,12 @@ from sklearn.metrics import classification_report
 
 
 def main():
-    print("Hello from supervised_learning.py")
+
     csv_files = glob.glob("harth/*.csv")
     dataframes = {}
     for file in csv_files:
         df = pd.read_csv(file)
-        key = file.split("\\")[-1].split(".")[0]  # Get file name without extension
+        key = file.split("\\")[-1].split(".")[0]
         dataframes[key] = df
 
     whole_data = pd.concat(dataframes.values())
@@ -40,9 +40,6 @@ def main():
 
     y_pred = model.predict(Χ_test)
 
-    accuracy = accuracy_score(y_test, y_pred)
-
-    print(f"Accuracy: {accuracy}")
     print(classification_report(y_test, y_pred))
 
 

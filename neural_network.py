@@ -37,10 +37,12 @@ class SimpleNN(nn.Module):
         return x
 
 
-def train_model(model, train_loader, criterion, optimizer, num_epochs=20):
+def train_model(model, train_loader, criterion, optimizer, device, num_epochs=20):
+    model.to(device)
     for epoch in range(num_epochs):
         model.train()
         for inputs, labels in train_loader:
+            inputs, labels = inputs.to(device), labels.to(device)
             optimizer.zero_grad()
             outputs = model(inputs)
             loss = criterion(outputs, labels)
@@ -90,7 +92,11 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-    train_model(model, train_loader, criterion, optimizer)
+    # Check for CUDA
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
+
+    train_model(model, train_loader, criterion, optimizer, device)
 
     # Evaluate the model
     model.eval()
@@ -98,6 +104,7 @@ def main():
     total = 0
     with torch.no_grad():
         for inputs, labels in test_loader:
+            inputs, labels = inputs.to(device), labels.to(device)
             outputs = model(inputs)
             _, predicted = torch.max(outputs, 1)
             total += labels.size(0)
