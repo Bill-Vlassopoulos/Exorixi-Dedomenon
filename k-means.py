@@ -4,6 +4,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
+from sklearn.metrics import silhouette_score
 
 
 def load_and_preprocess_data():
@@ -61,6 +62,7 @@ def plot_elbow_method(data, max_clusters=15):
     plt.title("Elbow Method for Optimal Number of Clusters")
     plt.xlabel("Number of Clusters")
     plt.ylabel("Inertia")
+    plt.grid()
     plt.show()
 
 
@@ -68,15 +70,17 @@ def main():
     data, labels = load_and_preprocess_data()
 
     # Plot the elbow method to find the optimal number of clusters
-    # plot_elbow_method(data, max_clusters=15)
+    plot_elbow_method(data, max_clusters=15)
 
     # Apply K-Means clustering with the chosen number of clusters
-    kmeans_clusters = apply_kmeans(data, n_clusters=6)
+    kmeans_clusters = apply_kmeans(data, n_clusters=7)
     visualize_clusters(data, kmeans_clusters, "K-Means Clustering")
 
-    # Apply DBSCAN clustering
-    # dbscan_clusters = apply_dbscan(data, eps=0.5, min_samples=5)
-    # visualize_clusters(data, dbscan_clusters, "DBSCAN Clustering")
+    if len(set(kmeans_clusters)) > 1:  # Silhouette score requires at least 2 clusters
+        score = silhouette_score(data, kmeans_clusters)
+        print(f"Silhouette Score: {score}")
+    else:
+        print("Silhouette Score cannot be calculated with less than 2 clusters.")
 
     # Compare the results
     print("K-Means Clustering Results:")

@@ -28,7 +28,6 @@ def main():
     from sklearn.model_selection import RandomizedSearchCV
     from scipy.stats import randint
 
-    # Define the parameter distribution
     param_dist = {
         "n_estimators": [50, 100],  # Reduced number of estimators
         "max_features": ["sqrt", None],  # Reduced max_features options
@@ -38,10 +37,8 @@ def main():
         "bootstrap": [True],  # Only test with bootstrap enabled
     }
 
-    # Initialize the model
     model = RandomForestClassifier(random_state=42, n_jobs=-1)
 
-    # Initialize RandomizedSearchCV
     random_search = RandomizedSearchCV(
         estimator=model,
         param_distributions=param_dist,
@@ -52,19 +49,17 @@ def main():
         random_state=42,
     )
 
-    # Fit the model
     random_search.fit(Χ_train, y_train)
 
-    # Get the best parameters
     best_params = random_search.best_params_
     print(f"Best parameters: {best_params}")
 
-    # Train the model with the best parameters
-    best_model = random_search.best_estimator_
-    best_model.fit(Χ_train, y_train)
-    y_pred = best_model.predict(Χ_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    print(f"Optimized Accuracy: {accuracy}")
+    # # Train the model with the best parameters
+    # best_model = random_search.best_estimator_
+    # best_model.fit(Χ_train, y_train)
+    # y_pred = best_model.predict(Χ_test)
+    # accuracy = accuracy_score(y_test, y_pred)
+    # print(f"Optimized Accuracy: {accuracy}")
 
 
 if __name__ == "__main__":

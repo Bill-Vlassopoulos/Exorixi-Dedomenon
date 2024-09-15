@@ -1,8 +1,9 @@
 import glob
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import DBSCAN
 from sklearn.manifold import TSNE
+from sklearn.metrics import silhouette_score
 import matplotlib.pyplot as plt
 
 
@@ -28,9 +29,9 @@ def load_and_preprocess_data():
     return scaled_data, whole_data["label"]
 
 
-def apply_agglomerative_clustering(data, n_clusters=11):
-    agglomerative = AgglomerativeClustering(n_clusters=n_clusters)
-    clusters = agglomerative.fit_predict(data)
+def apply_dbscan(data, eps=0.5, min_samples=5):
+    dbscan = DBSCAN(eps=eps, min_samples=min_samples)
+    clusters = dbscan.fit_predict(data)
     return clusters
 
 
@@ -47,14 +48,20 @@ def visualize_clusters(data, clusters, title):
 
 def main():
     data, labels = load_and_preprocess_data()
+    # Apply DBSCAN clustering
+    dbscan_clusters = apply_dbscan(data, eps=1.5, min_samples=10)
+    visualize_clusters(data, dbscan_clusters, "DBSCAN Clustering")
 
-    # Apply Agglomerative Clustering
-    agglomerative_clusters = apply_agglomerative_clustering(data, n_clusters=11)
-    visualize_clusters(data, agglomerative_clusters, "Agglomerative Clustering")
+    # Calculate and print the silhouette score
+    if len(set(dbscan_clusters)) > 1:  # Silhouette score requires at least 2 clusters
+        score = silhouette_score(data, dbscan_clusters)
+        print(f"Silhouette Score: {score}")
+    else:
+        print("Silhouette Score cannot be calculated with less than 2 clusters.")
 
-    # Print the Agglomerative Clustering results
-    print("Agglomerative Clustering Results:")
-    print(pd.Series(agglomerative_clusters).value_counts())
+    # Print the DBSCAN Clustering results
+    print("DBSCAN Clustering Results:")
+    print(pd.Series(dbscan_clusters).value_counts())
 
 
 if __name__ == "__main__":
